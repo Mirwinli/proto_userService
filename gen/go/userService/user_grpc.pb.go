@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	UserService_GetProfileByUsername_FullMethodName = "/chat.UserService/GetProfileByUsername"
+	UserService_CreateProfile_FullMethodName        = "/chat.UserService/CreateProfile"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	GetProfileByUsername(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	CreateProfile(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 }
 
 type userServiceClient struct {
@@ -47,11 +49,22 @@ func (c *userServiceClient) GetProfileByUsername(ctx context.Context, in *UserRe
 	return out, nil
 }
 
+func (c *userServiceClient) CreateProfile(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
 type UserServiceServer interface {
 	GetProfileByUsername(context.Context, *UserRequest) (*UserResponse, error)
+	CreateProfile(context.Context, *CreateRequest) (*CreateResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedUserServiceServer struct{}
 
 func (UnimplementedUserServiceServer) GetProfileByUsername(context.Context, *UserRequest) (*UserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProfileByUsername not implemented")
+}
+func (UnimplementedUserServiceServer) CreateProfile(context.Context, *CreateRequest) (*CreateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateProfile not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -104,6 +120,24 @@ func _UserService_GetProfileByUsername_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CreateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateProfile(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfileByUsername",
 			Handler:    _UserService_GetProfileByUsername_Handler,
+		},
+		{
+			MethodName: "CreateProfile",
+			Handler:    _UserService_CreateProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
