@@ -33,7 +33,6 @@ message UpdateRequest {
   string last_name = 2;
   google.protobuf.Timestamp birth_day = 3;
   string phone_number = 4;
-  string username = 5;
 }
 
 message UpdateResponse{}
