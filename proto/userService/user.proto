@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 service UserService{
   rpc GetProfileByUsername(UserRequest) returns (UserResponse);
   rpc CreateProfile(CreateRequest) returns (CreateResponse);
+  rpc UpdateProfile(UpdateRequest) returns (UpdateResponse);
 }
 message UserRequest {
   string username = 1;
@@ -26,6 +27,14 @@ message CreateRequest {
  int64 user_id = 2;
 }
 
-message CreateResponse {
-  bool isDone = 1;
+message CreateResponse {}
+
+message UpdateRequest {
+  string first_name = 1;
+  string last_name = 2;
+  google.protobuf.Timestamp birth_day = 3;
+  string phone_number = 4;
+  string username = 5;
 }
+
+message UpdateResponse{}
